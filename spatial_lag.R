@@ -101,11 +101,14 @@ lag_for_active <- function(x){
 
 .vectorized_lag_neighbours <- Vectorize(lag_neighbours)
 
-vectorized_lag_neighbours <- function(column, order){
+vectorized_lag_neighbours <- function(gid, order){
   # must take direct reference to the column
-  lag <- .vectorized_lag_neighbours(colummn, order)
+  lag <- .vectorized_lag_neighbours(gid, order)
   lag <- aperm(lag, c(2,1)) # re arrange the permutation
+  return(lag)
 }
+
+
 
 add_neighbour_column <- function(x){
   # adds column of neighbours to each event
