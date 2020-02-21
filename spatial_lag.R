@@ -78,7 +78,7 @@ lag_neighbours <- function(gid, order){
   }
   # remove the center gid - do not include in the lag.
   ans <- ans[ans != gid]
-  return(ans)
+  return(list(ans))
 }
 
 active_cells <- function(x){
@@ -104,7 +104,7 @@ lag_for_active <- function(x){
 vectorized_lag_neighbours <- function(gid, order){
   # must take direct reference to the column
   lag <- .vectorized_lag_neighbours(gid, order)
-  lag <- aperm(lag, c(2,1)) # re arrange the permutation
+  # lag <- aperm(lag, c(2,1)) # re arrange the permutation
   return(lag)
 }
 
@@ -115,3 +115,31 @@ add_neighbour_column <- function(x){
   # first make list of neighbours
   x <- dplyr::mutate(x@dataset@events, vals = vectorized_lag_neighbours(priogrid_gid, 1))
 }
+
+summarise_active_grids <- function(x){
+  # summarises the starting period and gives all existing priogrids in the time i.e the active ones.
+  out <- x %>% dplyr::group_by(period_start) %>% dplyr::summarize(new_var = list(unique(priogrid_gid)))
+}
+
+total_active_grids <- function(x){
+  # adds active grids for given time period as new column
+  out <- x %>% dplyr::group_by(period_start) %>% dplyr::mutate(active_grids = I(list(unique(priogrid_gid))))
+}
+
+list_set_intersect <- function(x, y){
+  # quick function to take two lists, and find the intersection of the lists
+  x <- intersect(x, y)
+  # unlist() <- for unlisting and turning to vector.
+}
+
+vectorized_intersect <- Vectorize(list_set_intersect)
+
+active_neighbours <- function(x){
+  # finds active neighbours
+  active <- total_active_grids(x)
+  active <- active %>% dplyr::mutate(grid_intersect = I(list(list_set_intersect(active_grids, vals))))
+}
+
+
+
+
