@@ -123,6 +123,8 @@ summarise_active_grids <- function(x){
 
 total_active_grids <- function(x){
   # adds active grids for given time period as new column
+  # incase it wasnt obvious this is a massively inneficient way of doing this
+  # TODO: sort this
   out <- x %>% dplyr::group_by(period_start) %>% dplyr::mutate(active_grids = I(list(unique(priogrid_gid))))
 }
 
@@ -132,13 +134,29 @@ list_set_intersect <- function(x, y){
   # unlist() <- for unlisting and turning to vector.
 }
 
-vectorized_intersect <- Vectorize(list_set_intersect)
+vectorized_intersect <- Vectorize(list_set_intersect) # seems to be working
 
 active_neighbours <- function(x){
-  # finds active neighbours
+  # finds active neighbours by finding intersect between active neighbours and possible current neighbours
   active <- total_active_grids(x)
-  active <- active %>% dplyr::mutate(grid_intersect = I(list(list_set_intersect(active_grids, vals))))
+
+  active <- active %>% dplyr::mutate(grid_intersect = I(vectorized_intersect(active_grids, vals)))
 }
+
+# now all we have to do is remove duplicates to get the neighbours at each time
+# and put into array.
+# and try to avoid some horrific O(n^?) times.
+
+extract_summary <- function(x){
+  # takes relevant dataframe with neighborus found and computes into a summary of information with date, gid and neighbours
+  group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>%  filter(row_number()==1)
+}
+
+
+
+
+
+
 
 
 

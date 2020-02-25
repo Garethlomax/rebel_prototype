@@ -5,7 +5,9 @@ df = data.frame("event" = l1, "gid" = gid, "period_start" = period_start)
 # can put this in here
 #
 vectors <- I(list(c(1,2,3,4,5), c(4,5,6), c(7,8,9), c(12,2,2)))
+vectors2 <- I(list(c(1,2), c(5), c(1), c(12,2)))
 df$neighbours <- vectors
+df$vecs <- vectors2
 
 # make list for all possibe neighbours
 # ut in to adjacecncy matrix.
