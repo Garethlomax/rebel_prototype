@@ -149,9 +149,12 @@ active_neighbours <- function(x){
 
 extract_summary <- function(x){
   # takes relevant dataframe with neighborus found and computes into a summary of information with date, gid and neighbours
-  group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>%  filter(row_number()==1)
+  group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::summarise(new_var =grid_intersect[1])#filter(dplyr::row_number()==1)
 }
 
+
+# extracts number of events for each time
+#group <- test3 %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::tally()
 
 
 
