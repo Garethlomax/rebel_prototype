@@ -149,16 +149,34 @@ active_neighbours <- function(x){
 
 extract_summary <- function(x){
   # takes relevant dataframe with neighborus found and computes into a summary of information with date, gid and neighbours
-  group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::summarise(new_var =grid_intersect[1])#filter(dplyr::row_number()==1)
+  group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::summarise(new_var = grid_intersect[1])#filter(dplyr::row_number()==1)
 }
 
 
 # extracts number of events for each time
 #group <- test3 %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::tally()
 
+# df %>% arrange(stopSequence) %>% group_by(id) %>% slice(c(1,n()))
+
+adj_matrix <- function(x){
+  # function to define adjacency matrix for geographic
+  # first we construct the empty matrix - can we do csr sparse?
+  time_steps <- dplyr::n_distinct(x@dataset@events$period_start)
+  n_grids <- dplyr::n_distinct(x@dataset@events$priogrid_gid)
+  arr <- array(0, dim = c(n_grids, n_grids, time_steps)) # empty array of zeros.
+  # we arrange the gids in ascending order
+  # arrange by gids
+  arranged <- dplyr::arrange(x@dataset@events, priogrid_gid)
+  # unique gids
+  gids <- unique(x@dataset@events$priogrid_gid)
+  # summarise in array
+  i <- 0
 
 
 
+
+
+}
 
 
 
