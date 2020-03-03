@@ -1,11 +1,11 @@
-l1 = c("a", "b", "c", "c")
-gid = c(1,2,3,4)
-period_start = c(1,2,2,4)
+l1 = c("a", "b", "c", "c", "d")
+gid = c(1,2,3,4,4)
+period_start = c(1,2,2,4,4)
 df = data.frame("event" = l1, "gid" = gid, "period_start" = period_start)
 # can put this in here
 #
-vectors <- I(list(c(1,2,3,4,5), c(4,5,6), c(7,8,9), c(12,2,2)))
-vectors2 <- I(list(c(1,2), c(5), c(1), c(12,2)))
+vectors <- I(list(c(1,2,3,4,5), c(4,5,6), c(7,8,9), c(12,2,2), c(1)))
+vectors2 <- I(list(c(1,2), c(5), c(1), c(12,2), c(1)))
 df$neighbours <- vectors
 df$vecs <- vectors2
 

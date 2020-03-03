@@ -138,7 +138,9 @@ vectorized_intersect <- Vectorize(list_set_intersect) # seems to be working
 
 active_neighbours <- function(x){
   # finds active neighbours by finding intersect between active neighbours and possible current neighbours
-  active <- total_active_grids(x)
+  active <- add_neighbour_column(x)
+
+  active <- total_active_grids(active)
 
   active <- active %>% dplyr::mutate(grid_intersect = I(vectorized_intersect(active_grids, vals)))
 }
@@ -152,11 +154,19 @@ extract_summary <- function(x){
   group <- x %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::summarise(new_var = grid_intersect[1])#filter(dplyr::row_number()==1)
 }
 
+unique_events <- function(x){
+  # is dataframe of events - gives one event per gid month
+  unique <- x %>% dplyr::group_by(priogrid_gid, period_start) %>%  dplyr::filter(dplyr::row_number() == 1)
+}
+
 
 # extracts number of events for each time
 #group <- test3 %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::tally()
 
 # df %>% arrange(stopSequence) %>% group_by(id) %>% slice(c(1,n()))
+df_list_to_matrix <- function(x){
+  # takes dataframe with column of lists - makes them into matrix.
+}
 
 adj_matrix <- function(x){
   # function to define adjacency matrix for geographic
@@ -169,12 +179,9 @@ adj_matrix <- function(x){
   arranged <- dplyr::arrange(x@dataset@events, priogrid_gid)
   # unique gids
   gids <- unique(x@dataset@events$priogrid_gid)
-  # summarise in array
-  i <- 0
-
-
-
-
+  # summarise lists.
+  # unique neighbours
+  uniq <- unique_events(x@dataset@events)
 
 }
 
