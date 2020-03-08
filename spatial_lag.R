@@ -164,9 +164,34 @@ unique_events <- function(x){
 #group <- test3 %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::tally()
 
 # df %>% arrange(stopSequence) %>% group_by(id) %>% slice(c(1,n()))
-df_list_to_matrix <- function(x){
+df_list_to_matrix <- function(x, dim = 3, gid_vec){
   # takes dataframe with column of lists - makes them into matrix.
+  # dim is the size of the matrix
+  # gid_vec is a vector of all gids - to rename the matrix.
+  # this function takes a dataframe that has already been filtered - i.e for one time period.
+  mat <- matrix(0, dim, dim, list(gid_vec, gid_vec)) # gid vec to refer to matrix
+  # not efficient at all
+  # need to sort by priogrid
+  for (gid in x$priogrid_gid){
+    for (adj in x$grid_intersect[])
+  }
+
 }
+
+adj_list_to_mat <- function(gid, adj, mat){
+  # adds all in single list for grid to matrix.
+  # matrix remains same
+  # mat must have had columns renamed
+  for (i in adj){
+    mat[sprintf("%i", gid), sprintf("%i", i)] = 1 #over list of adjacent for each gid
+    # going for column ordered.
+  }
+  return(mat) # dont know if we want to do this or act on a general one.
+  # you cannot pass by refernce in R. This is a garbage language.
+
+
+}
+
 
 adj_matrix <- function(x){
   # function to define adjacency matrix for geographic
@@ -178,10 +203,11 @@ adj_matrix <- function(x){
   # arrange by gids
   arranged <- dplyr::arrange(x@dataset@events, priogrid_gid)
   # unique gids
-  gids <- unique(x@dataset@events$priogrid_gid)
+  gids <- unique(arranged) # arrange unique
   # summarise lists.
   # unique neighbours
   uniq <- unique_events(x@dataset@events)
+
 
 }
 
