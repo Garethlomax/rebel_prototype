@@ -164,17 +164,18 @@ unique_events <- function(x){
 #group <- test3 %>% dplyr::group_by(priogrid_gid, period_start) %>% dplyr::tally()
 
 # df %>% arrange(stopSequence) %>% group_by(id) %>% slice(c(1,n()))
-df_list_to_matrix <- function(x, dim = 3, gid_vec){
+labelled_matrix <- function(dim = 3, gid_vec){
   # takes dataframe with column of lists - makes them into matrix.
   # dim is the size of the matrix
   # gid_vec is a vector of all gids - to rename the matrix.
   # this function takes a dataframe that has already been filtered - i.e for one time period.
-  mat <- matrix(0, dim, dim, list(gid_vec, gid_vec)) # gid vec to refer to matrix
+  mat <- matrix(0, dim, dim, dimnames = list(gid_vec, gid_vec)) # gid vec to refer to matrix
+  return(mat)
   # not efficient at all
   # need to sort by priogrid
-  for (gid in x$priogrid_gid){
-    for (adj in x$grid_intersect[])
-  }
+  # for (gid in x$priogrid_gid){
+  #   for (adj in x$grid_intersect[])
+  # }
 
 }
 
@@ -182,15 +183,42 @@ adj_list_to_mat <- function(gid, adj, mat){
   # adds all in single list for grid to matrix.
   # matrix remains same
   # mat must have had columns renamed
-  for (i in adj){
+  for (i in adj) {
     mat[sprintf("%i", gid), sprintf("%i", i)] = 1 #over list of adjacent for each gid
     # going for column ordered.
-  }
+    }
   return(mat) # dont know if we want to do this or act on a general one.
   # you cannot pass by refernce in R. This is a garbage language.
 
 
 }
+
+
+looped_adj_list_to_mat <- function(unique_gids, gid, adj){
+  # loops over adj list as bodge
+  mat <- labelled_matrix(length(gid), unique_gids)
+  for (i in 1:length(gid)){
+    mat <- adj_list_to_mat(gid[i], adj[i], mat) # over writes matrix
+  }
+  # print(isSymmetric(mat)) # matrix is adjacency matrix so should be symmetric.
+  return(mat)
+}
+
+adj_wrapper <- function(x){
+  unique_gids <- unique(dplyr::arrange(x, priogrid_gid)$priogrid_gid)
+
+  mat <- looped_adj_list_to_mat(unique_gids, x$priogrid_gid, x$grid_intersect)
+  return(mat) # over looped variable.
+}
+
+
+.vectorized_adj_list_to_mat <- Vectorize(adj_list_to_mat)
+
+vectorized_adj_list_to_mat <- function(gid, adj, mat){
+  # trying to replicate pass by reference.
+  return(.vectorized_adj_list_to_mat(gid, adj, mat))
+}
+
 
 
 adj_matrix <- function(x){
