@@ -195,8 +195,9 @@ adj_list_to_mat <- function(gid, adj, mat){
 
 
 looped_adj_list_to_mat <- function(unique_gids, gid, adj){
+  # unique gids should be all possible gids
   # loops over adj list as bodge
-  mat <- labelled_matrix(length(gid), unique_gids)
+  mat <- labelled_matrix(length(unique_gids), unique_gids)
   for (i in 1:length(gid)){
     mat <- adj_list_to_mat(gid[i], adj[i], mat) # over writes matrix
   }
@@ -205,13 +206,32 @@ looped_adj_list_to_mat <- function(unique_gids, gid, adj){
 }
 
 adj_wrapper <- function(x){
+  # for unique gids the unique gids should come from outside the loop - i.e not be time variant
   unique_gids <- unique(dplyr::arrange(x, priogrid_gid)$priogrid_gid)
 
   mat <- looped_adj_list_to_mat(unique_gids, x$priogrid_gid, x$grid_intersect)
   return(mat) # over looped variable.
 }
 
+full_adj_matrix <- function(x){
+  # naive iteration over all grids
+  un <- unique(dplyr::arrange(x, priogrid_gid)$priogrid_gid)
 
+  dim = length(un)
+
+  start_date = unique(dplyr::arrange(x, period_start)$period_start)
+
+  matrices <- vector("list", length(start_date))
+  # loops are bad.
+  i = 1
+  for (date in start_date){
+    print(i)
+    matrices[i] = adj_wrapper(x[x$period_start == date, ])
+    i = i + 1
+
+  }
+  return(matrices)
+}
 .vectorized_adj_list_to_mat <- Vectorize(adj_list_to_mat)
 
 vectorized_adj_list_to_mat <- function(gid, adj, mat){
