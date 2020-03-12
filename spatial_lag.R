@@ -210,28 +210,37 @@ adj_wrapper <- function(x, unique_gids){
   # unique_gids <- unique(dplyr::arrange(x, priogrid_gid)$priogrid_gid)
 
   mat <- looped_adj_list_to_mat(unique_gids, x$priogrid_gid, x$grid_intersect)
-  return(mat) # over looped variable.
+  # here we use sparse matrix
+  return(slam::as.simple_triplet_matrix(mat)) # over looped variable.
 }
 
 full_adj_matrix <- function(x){
   # naive iteration over all grids
+  # hugely memory hungry - roughly 9 gb in size
   un <- unique(dplyr::arrange(x, priogrid_gid)$priogrid_gid)
 
   dim = length(un)
 
   start_date = unique(dplyr::arrange(x, period_start)$period_start)
 
-  matrices <- vector("list", length(start_date))
+  # matrices <- vector("list", length(start_date))
   # print(length(matrices))
   # loops are bad.
   i = 1
   for (date in start_date){
     print(i)
-    matrices[[i]] <- adj_wrapper(x[x$period_start == date, ], un)
+    if (i == 1){
+      mat <- adj_wrapper(x[x$period_start == date, ], un)
+      # again this if statement is inneficient
+    } else {
+      mat_2 <- adj_wrapper(x[x$period_start == date, ], un)
+      mat <- slam::abind_simple_sparse_array(mat, mat_2, MARGIN = -3L)
+    }
+
     i = i + 1
   }
 
-  return(matrices)
+  return(mat)
 }
 .vectorized_adj_list_to_mat <- Vectorize(adj_list_to_mat)
 
@@ -261,6 +270,6 @@ adj_matrix <- function(x){
 }
 
 
-
-
+# we also use Matrix
+# at max size - matrix is 21.3 GB - exciting.
 
