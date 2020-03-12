@@ -232,9 +232,20 @@ full_adj_matrix <- function(x){
     if (i == 1){
       mat <- adj_wrapper(x[x$period_start == date, ], un)
       # again this if statement is inneficient
-    } else {
+    } else if (i == 2) {
+      # to deal with adding new dimension
+
       mat_2 <- adj_wrapper(x[x$period_start == date, ], un)
+      # print(dim(mat_2))
+
       mat <- slam::abind_simple_sparse_array(mat, mat_2, MARGIN = -3L)
+      # print(dim(mat))
+    } else{
+      mat_2 <- adj_wrapper(x[x$period_start == date, ], un)
+      # print(dim(mat_2))
+
+      mat <- slam::abind_simple_sparse_array(mat, mat_2, MARGIN = 3L)
+      # print(dim(mat))
     }
 
     i = i + 1
